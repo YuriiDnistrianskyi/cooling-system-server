@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter
-from .route import *
+from app.route import *
 
 def create_app() -> FastAPI:
     app: FastAPI = FastAPI()
