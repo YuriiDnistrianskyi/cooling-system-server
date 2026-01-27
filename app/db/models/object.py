@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, ForeignKey
-from typing import List
+from typing import List, Dict
 from app.db.database import Base
 
 class Object(Base):
@@ -14,3 +14,15 @@ class Object(Base):
     # devices = relationship("Device", back_populates="object")
 
     # owner: User = relationship("User", back_populates="devices")
+
+    def get_info(self) -> Dict:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'user_id': self.user_id
+        }
+
+    @staticmethod
+    def create_object(data: dict):
+        return Object(**data)
+
