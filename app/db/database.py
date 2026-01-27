@@ -12,3 +12,7 @@ async_session = sessionmaker(
 
 class Base(DeclarativeBase):
     pass
+
+from app.db.models.user import User
+from app.db.models.object import Object
+from app.db.models.device import Device

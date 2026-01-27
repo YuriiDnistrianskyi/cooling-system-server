@@ -1,6 +1,6 @@
-from database import async_session
+from app.db.database import async_session
 
 async def get_async_session():
-    async with async__session() as session:
+    async with async_session() as session:
         yield session
 
