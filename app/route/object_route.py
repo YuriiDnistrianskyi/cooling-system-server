@@ -32,3 +32,16 @@ async def object_post(
     session.add(new_object)
     await session.commit()
     return {'message': 'Object created successfully!'}
+
+@object_router.delete('/{object_id}')
+async def device_delete(
+        object_id: int,
+        session: AsyncSession = Depends(get_async_session)):
+    device = await session.get(Object, object_id)
+    if not device:
+        return {'message': 'Device not found!'}
+
+    await session.delete(device)
+    await session.commit()
+
+    return {'message': 'Device deleted successfully!'}

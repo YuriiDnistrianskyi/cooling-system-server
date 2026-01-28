@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Integer, String, Boolean
-from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Dict
 from app.db.database import Base
 
