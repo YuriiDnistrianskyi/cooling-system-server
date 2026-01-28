@@ -13,13 +13,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String)
 
-    @staticmethod
-    def generate_password(password: str) -> None:
-        return generate_password_hash(password)
-
-    def check_password(self, password: str) -> Boolean:
-        return check_password_hash(self.password_hash, password)
-
     def get_info(self) -> Dict:
         return {
             'id': self.id,

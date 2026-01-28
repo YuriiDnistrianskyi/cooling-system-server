@@ -15,14 +15,6 @@ class Device(Base):
 
     # object: Object = relationship('Object', back_populates="devices")
 
-    @staticmethod
-    def generate_password(password: str) -> str:
-        password_hash = generate_password_hash(password)
-        return password_hash
-
-    def verify_password(self, password: str) -> bool:
-        return check_password_hash(self.password_hash, password)
-
     def get_info(self) -> Dict:
         return {
             'id': self.id,
