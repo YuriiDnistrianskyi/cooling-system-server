@@ -35,3 +35,15 @@ async def device_post(
     await session.commit()
     return {'message': 'Device created successfully!'}
 
+@device_router.delete('/{device_id}')
+async def device_delete(
+        device_id: int,
+        session: AsyncSession = Depends(get_async_session)):
+    device = await session.get(Device, device_id)
+    if not device:
+        return {'message': 'Device not found!'}
+
+    await session.delete(device)
+    await session.commit()
+
+    return {'message': 'Device deleted successfully!'}
