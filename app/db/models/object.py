@@ -8,6 +8,7 @@ class Object(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String)
+    password_hash: Mapped[str] = mapped_column(String)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
 
     # from app.db.models.device import Device
