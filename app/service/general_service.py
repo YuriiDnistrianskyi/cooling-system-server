@@ -1,21 +1,22 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Dict
+from typing import Generic, TypeVar, List
 
-class GeneralService:
-    _class_type = None
+T = TypeVar("T")
+CreateSchema = TypeVar("CreateSchema")
+UpdateSchema = TypeVar("UpdateSchema")
+
+class GeneralService(Generic[T, CreateSchema, UpdateSchema]):
     _dao = None
-    _create_schema = None
-    _update_schema = None
 
-    async def get(self, session: AsyncSession) -> List[self._class_type]:
+    async def get(self, session: AsyncSession) -> List[T]:
         list = await self._dao.get(session)
         return list
 
-    async def create(self, data: _create_schema, session: AsyncSession) -> self._class_type:
+    async def create(self, data: CreateSchema, session: AsyncSession) -> T:
         pass
 
-    async def update(self, id: int, data: self._update_schema, session: AsyncSession) -> self._class_type:
+    async def update(self, id: int, data: UpdateSchema, session: AsyncSession) -> T:
         pass
 
     async def delete(self, id: int, session: AsyncSession) -> None:
-        self._dao.delete(id, session)
+        await self._dao.delete(id, session)

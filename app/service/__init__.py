@@ -1,6 +1,6 @@
-from orders.user_service import UserService
-from orders.object_service import ObjectService
-from orders.device_service import DeviceService
+from app.service.orders.user_service import UserService
+from app.service.orders.object_service import ObjectService
+from app.service.orders.device_service import DeviceService
 
 user_service = UserService()
 object_service = ObjectService()

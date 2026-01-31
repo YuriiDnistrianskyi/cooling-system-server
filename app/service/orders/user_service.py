@@ -6,27 +6,24 @@ from app.schemas.user import CreateUser, UpdateUser
 from app.core.security import hash_password
 
 
-class UserService(GeneralService):
-    _class_type = User
+class UserService(GeneralService[User, CreateUser, UpdateUser]):
     _dao = user_dao
-    _create_schema = CreateUser
-    _update_schema = UpdateUser
 
-    async def create(self, data: self._create_schema, session: AsyncSession) -> self._class_type:
+    async def create(self, data: CreateUser, session: AsyncSession) -> User:
         hash = hash_password(data.password)
 
-        new_obj = self._class_type(
+        new_obj = User(
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
             password_hash=hash
         )
 
-        result = await self._dao.create(new_obj)
+        result = await self._dao.create(new_obj, session)
         return result
 
-    async def update(self, id: int, data: self._update_schema, session: AsyncSession) -> self._class_type:
-        obj = await self._dao.update(id, data)
+    async def update(self, id: int, data: UpdateUser, session: AsyncSession) -> User:
+        obj = await self._dao.update(id, session)
         data_for_update = data.model_dump(exclude_unset=True)
 
         if "first_name" in data_for_update:

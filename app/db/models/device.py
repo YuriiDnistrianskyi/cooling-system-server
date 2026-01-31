@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean, Integer, ForeignKey
-from werkzeug.security import generate_password_hash, check_password_hash
 from typing import Dict
 from app.db.database import Base
 from app.db.models.object import Object
