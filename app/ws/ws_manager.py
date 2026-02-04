@@ -8,7 +8,7 @@ class ConnectionManager:
         await websocket.accept()
         self.active_connections[device_id] = websocket
 
-    def disconnect(self, device_id: str, websocket: WebSocket) -> None:
+    async def disconnect(self, device_id: str, websocket: WebSocket) -> None:
         self.active_connections.pop(device_id, None)
 
     async def send_to(self, device_id: str, massage: dict) -> None:
