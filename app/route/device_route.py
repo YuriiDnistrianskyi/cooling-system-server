@@ -73,7 +73,7 @@ async def device_websocket(
     if not password_is_ok:
         raise HTTPException(status_code=400, detail="Incorrect password")
 
-    await ws_manager.connect(device_id, websocket)
+    await ws_manager.connect("device", device_id, websocket)
 
     try:
         while True:
@@ -83,7 +83,7 @@ async def device_websocket(
             point = Point(
                 Point("speed")
                 .tag("device_id", device_id)
-                .field("value", payload["speed"])
+                .field("value", payload["value"])
                 .time(datetime.utcnow())
             )
 
@@ -92,4 +92,4 @@ async def device_websocket(
                 record=point
             )
     except:
-        await ws_manager.disconnect(device_id, websocket)
+        await ws_manager.disconnect("device", device_id, websocket)
