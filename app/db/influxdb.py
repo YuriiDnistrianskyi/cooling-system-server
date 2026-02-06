@@ -1,5 +1,7 @@
 from influxdb_client import InfluxDBClient
 
+from app.config import INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG
+
 client = InfluxDBClient(
     url=INFLUXDB_URL,
     token=INFLUXDB_TOKEN,
