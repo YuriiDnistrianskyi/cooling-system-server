@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
+from influxdb_client import Point
 import json
+from datetime import datetime
+
+from app.config import INFLUXDB_BUCKET
 from app.db.dependencies import get_async_session
+from app.db.influxdb import write_api
 from app.service import device_service
 from app.schemas.device import CreateDevice, UpdateDevice
 from app.ws import ws_manager
@@ -74,6 +79,17 @@ async def device_websocket(
         while True:
             data = await websocket.receive_text()
             payload = json.loads(data)
-            #TODO
+
+            point = Point(
+                Point("speed")
+                .tag("device_id", device_id)
+                .field("value", payload["speed"])
+                .time(datetime.utcnow())
+            )
+
+            write_api.write(
+                bucket=INFLUXDB_BUCKET,
+                record=point
+            )
     except:
         await ws_manager.disconnect(device_id, websocket)
