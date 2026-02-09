@@ -12,8 +12,7 @@ class Object(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     max_temperature: Mapped[int] = mapped_column(Integer)
 
-    # from app.db.models.device import Device
-    # devices = relationship("Device", back_populates="object")
+    devices: Mapped[List["Device"]] = relationship("Device", back_populates="object")
 
     # owner: User = relationship("User", back_populates="devices")
 

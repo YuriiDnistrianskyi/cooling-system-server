@@ -11,8 +11,9 @@ class Device(Base):
     name: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
     object_id: Mapped[int] = mapped_column(Integer, ForeignKey('object.id'))
+    default_speed: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    # object: Object = relationship('Object', back_populates="devices")
+    object: Mapped["Object"] = relationship('Object', back_populates="devices")
 
     def get_info(self) -> Dict:
         return {
