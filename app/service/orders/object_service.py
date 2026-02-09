@@ -16,6 +16,7 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
             name=data.name,
             password_hash=hash,
             user_id=data.user_id,
+            max_temperature=data.max_temperature,
         )
 
         result = await self._dao.create(new_obj, session)
@@ -33,5 +34,8 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
 
         if "user_id" in data_for_update:
             obj.user_id = data_for_update["user_id"]
+
+        if "max_temperature" in data_for_update:
+            obj.max_temperature = data_for_update["max_temperature"]
 
         return obj
