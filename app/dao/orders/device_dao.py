@@ -1,8 +1,9 @@
-from app.db.database import Device
-from app.dao.general_dao import GeneralDao
+from influxdb_client import Point
 
+from app.db.database import Device
+from app.db.influxdb import write_api, query_api
+from app.dao.general_dao import GeneralDao
 from app.config import INFLUXDB_BUCKET
-from app.db.influxdb import query_api
 
 class DeviceDao(GeneralDao[Device]):
     _class_type = Device
@@ -19,3 +20,9 @@ class DeviceDao(GeneralDao[Device]):
                 """
         device_speed: float = query_api.query(query)
         return device_speed
+
+    async def write_speed(self, point: Point) -> None:
+        write_api.write(
+            bucket=INFLUXDB_BUCKET,
+            record=point
+        )
