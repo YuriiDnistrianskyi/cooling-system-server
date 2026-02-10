@@ -10,7 +10,8 @@ class Object(Base):
     name: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
-    max_temperature: Mapped[int] = mapped_column(Integer)
+    max_temperature: Mapped[float] = mapped_column(Integer)
+    default_speed_for_devices: Mapped[int] = mapped_column(Integer)
 
     devices: Mapped[List["Device"]] = relationship("Device", back_populates="object")
 

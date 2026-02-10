@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from influxdb_client import Point
-from detetime import datetime
+from datetime import datetime
 
 from app.service.general_service import GeneralService
 from app.dao import device_dao

@@ -24,6 +24,7 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
             password_hash=hash,
             user_id=data.user_id,
             max_temperature=data.max_temperature,
+            default_speed_for_devices=data.default_speed_for_devices,
         )
 
         result = await self._dao.create(new_obj, session)
@@ -44,6 +45,9 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
 
         if "max_temperature" in data_for_update:
             obj.max_temperature = data_for_update["max_temperature"]
+
+        if "default_speed_for_devices" in data_for_update:
+            obj.default_speed_for_devices = data_for_update["default_speed_for_devices"]
 
         return obj
 
@@ -66,7 +70,7 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
             for device in object.devices:
                 await ws_manager.send_to("device", device.id, payload)
 
-        elif (temperature < object.max_temperature) and (device_speed > object.default_speed_for_device) and can_send:
+        elif (temperature < object.max_temperature) and (device_speed > object.default_speed_for_devices) and can_send:
             payload: dict = {"command": "down"}
             for device in object.devices:
                 await ws_manager.send_to("device", device.id, payload)
