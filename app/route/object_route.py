@@ -1,8 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from influxdb_client import Point
+import json
+from datetime import datetime
+
 from app.db.dependencies import get_async_session
+from app.db.influxdb import write_api
 from app.service import object_service
 from app.schemas.object import CreateObject, UpdateObject
+from app.core.security import verify_password
+from app.ws import ws_manager
 
 object_router = APIRouter()
 
@@ -52,3 +59,26 @@ async def object_delete(
     except:
         await session.rollback()
         raise
+
+@object_router.websocket('/ws')
+async def object_websocket(
+        websocket: WebSocket,
+        session: AsyncSession = Depends(get_async_session)
+):
+    object_id = websocket.query_params.get('object_id')
+    password = websocket.query_params.get('password')
+    object = await object_service.get_by_id(object_id, session)
+    password_is_ok = verify_password(password, object.password_hash)
+    if not password_is_ok:
+        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    await ws_manager.connect("object", object_id, websocket)
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            payload = json.loads(data)
+            await object_service.write_temperature(object, payload)
+
+    except:
+        await ws_manager.disconnect("object", object_id, websocket)
