@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
 
-from app.db.dependencies import get_async_session
+from app.db.dependencies import get_async_session, get_session_factory
 from app.service import device_service
 from app.schemas.device import CreateDevice, UpdateDevice
 from app.ws import ws_manager
@@ -60,14 +60,16 @@ async def device_delete(
 @device_router.websocket('/ws')
 async def device_websocket(
         websocket: WebSocket,
-        session: AsyncSession = Depends(get_async_session)
+        session_factory = Depends(get_session_factory)
 ):
     device_id = int(websocket.query_params.get('device_id'))
     password = websocket.query_params.get('password')
-    device = await device_service.get_by_id(device_id, session)
-    password_is_ok = verify_password(password, device.password_hash)
-    if not password_is_ok:
-        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    async with session_factory() as session:
+        device = await device_service.get_by_id(device_id, session)
+        password_is_ok = verify_password(password, device.password_hash)
+        if not password_is_ok:
+            raise HTTPException(status_code=400, detail="Incorrect password")
 
     await ws_manager.connect("device", device_id, websocket)
 
