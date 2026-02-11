@@ -62,7 +62,7 @@ async def device_websocket(
         websocket: WebSocket,
         session: AsyncSession = Depends(get_async_session)
 ):
-    device_id = websocket.query_params.get('device_id')
+    device_id = int(websocket.query_params.get('device_id'))
     password = websocket.query_params.get('password')
     device = await device_service.get_by_id(device_id, session)
     password_is_ok = verify_password(password, device.password_hash)

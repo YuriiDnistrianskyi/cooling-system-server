@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from influxdb_client import Point
 from typing import Dict
+from datetime import datetime
 
 from app.service.general_service import GeneralService
 from app.dao import object_dao, device_dao
@@ -10,7 +11,6 @@ from app.schemas.object import CreateObject, UpdateObject
 from app.core.security import hash_password
 from app.core.cooldown import can_send_command
 from app.ws import ws_manager
-from app.config import INFLUXDB_BUCKET
 
 
 class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
@@ -51,7 +51,7 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
 
         return obj
 
-    async def write_temperature(self, object: Object, payload: Dict):
+    async def write_temperature(self, object_id: int, payload: Dict, session: AsyncSession) -> None:
         temperature: float = payload["value"]
         point = Point(
             Point("temperature")
@@ -62,10 +62,11 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
         await self._dao.write_temperature(point)
 
         can_send: bool = await can_send_command(object_id)
-        first_device_id: int = object.devices[0].id
-        device_speed: float = await device_dao.get_speed(first_device_id)
+        first_device: int = await device_dao.get_first_device_by_object_id(object_id, session)
+        device_speed: float = await device_dao.get_speed(first_device.id)
+        object: Object = await object_dao.get_by_id(object_id, session)
 
-        if tempeature > object.max_temperature and can_send:
+        if temperature > object.max_temperature and can_send:
             payload: dict = {"command": "up"}
             for device in object.devices:
                 await ws_manager.send_to("device", device.id, payload)

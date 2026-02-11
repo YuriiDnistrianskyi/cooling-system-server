@@ -4,7 +4,7 @@ from influxdb_client import Point
 import json
 from datetime import datetime
 
-from app.db.dependencies import get_async_session
+from app.db.dependencies import get_async_session, get_session_factory
 from app.db.influxdb import write_api
 from app.service import object_service
 from app.schemas.object import CreateObject, UpdateObject
@@ -63,14 +63,16 @@ async def object_delete(
 @object_router.websocket('/ws')
 async def object_websocket(
         websocket: WebSocket,
-        session: AsyncSession = Depends(get_async_session)
+        session_factory = Depends(get_session_factory)
 ):
-    object_id = websocket.query_params.get('object_id')
+    object_id = int(websocket.query_params.get('object_id'))
     password = websocket.query_params.get('password')
-    object = await object_service.get_by_id(object_id, session)
-    password_is_ok = verify_password(password, object.password_hash)
-    if not password_is_ok:
-        raise HTTPException(status_code=400, detail="Incorrect password")
+
+    async with session_factory() as session:
+        object = await object_service.get_by_id(object_id, session)
+        password_is_ok = verify_password(password, object.password_hash)
+        if not password_is_ok:
+            raise HTTPException(status_code=400, detail="Incorrect password")
 
     await ws_manager.connect("object", object_id, websocket)
 
@@ -78,7 +80,9 @@ async def object_websocket(
         while True:
             data = await websocket.receive_text()
             payload = json.loads(data)
-            await object_service.write_temperature(object, payload)
+
+            async with session_factory() as session:
+                await object_service.write_temperature(object_id, payload, session)
 
     except:
         await ws_manager.disconnect("object", object_id, websocket)
