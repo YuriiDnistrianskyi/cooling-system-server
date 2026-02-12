@@ -60,6 +60,13 @@ async def object_delete(
         await session.rollback()
         raise
 
+@object_router.get('/graph/{object_id}')
+async def object_get_graph(
+        object_id: int,
+):
+    date = await object_service.get_graph(object_id)
+    return {'date': date}
+
 @object_router.websocket('/ws')
 async def object_websocket(
         websocket: WebSocket,

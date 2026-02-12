@@ -6,7 +6,6 @@ from datetime import datetime
 from app.service.general_service import GeneralService
 from app.dao import object_dao, device_dao
 from app.db.database import Object
-from app.db.influxdb import query_api
 from app.schemas.object import CreateObject, UpdateObject
 from app.core.security import hash_password
 from app.core.cooldown import can_send_command
@@ -51,9 +50,13 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
 
         return obj
 
+    async def get_graph(self, object_id: int):
+        return None
+        #TODO
+
     async def write_temperature(self, object_id: int, payload: Dict, session: AsyncSession) -> None:
         temperature: float = payload["value"]
-        point = Point(
+        point = (
             Point("temperature")
             .tag("object_id", object_id)
             .field("value", temperature)

@@ -1,7 +1,5 @@
 import asyncio, time
 
-from app.config import COOLDOWN
-
 last_command_ts = {}
 lock = asyncio.Lock()
 

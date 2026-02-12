@@ -6,7 +6,7 @@ from typing import List
 from app.db.database import Device
 from app.db.influxdb import write_api, query_api
 from app.dao.general_dao import GeneralDao
-from app.config import INFLUXDB_BUCKET
+from app.core.config import INFLUXDB_BUCKET, INFLUXDB_ORG
 
 class DeviceDao(GeneralDao[Device]):
     _class_type = Device
@@ -41,19 +41,19 @@ class DeviceDao(GeneralDao[Device]):
                 |> last()
                 """
 
-        tables = query_api.query(query)
+        speed = None
 
-        if not tables:
-            return 0 # 100
+        for record in query_api.query_stream(query):
+            speed = record.get_value()
 
-        for table in tables:
-            for record in table.records:
-                return record.get_value
+        if speed is None:
+            speed = 0 #100
 
-        return None
+        return speed
 
     async def write_speed(self, point: Point) -> None:
         write_api.write(
             bucket=INFLUXDB_BUCKET,
+            org=INFLUXDB_ORG,
             record=point
         )

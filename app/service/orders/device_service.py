@@ -41,7 +41,7 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
 
     async def write_speed(self, device_id: int, payload: dict) -> None:
         speed: int = payload["value"]
-        point: Point = Point(
+        point: Point = (
             Point("speed")
             .tag("device_id", device_id)
             .field("value", speed)
