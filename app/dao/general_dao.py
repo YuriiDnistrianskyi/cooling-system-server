@@ -14,6 +14,10 @@ class GeneralDao(Generic[T]):
         result = list.scalars().all()
         return result
 
+    async def get_by_id(self, id: int, session: AsyncSession) -> T:
+        obj = await session.get(self._class_type, id)
+        return obj
+
     async def create(self, obj: T, session: AsyncSession) -> T:
         session.add(obj)
         return obj

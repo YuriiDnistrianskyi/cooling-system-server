@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Generic, TypeVar, List
 
@@ -11,6 +12,12 @@ class GeneralService(Generic[T, CreateSchema, UpdateSchema]):
     async def get(self, session: AsyncSession) -> List[T]:
         list = await self._dao.get(session)
         return list
+
+    async def get_by_id(self, id: int, session: AsyncSession) -> T:
+        obj = await self._dao.get_by_id(id, session)
+        if not obj:
+            raise HTTPException(status_code=404, detail="Object not found")
+        return obj
 
     async def create(self, data: CreateSchema, session: AsyncSession) -> T:
         pass

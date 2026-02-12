@@ -10,9 +10,10 @@ class Object(Base):
     name: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    max_temperature: Mapped[float] = mapped_column(Integer)
+    default_speed_for_devices: Mapped[int] = mapped_column(Integer)
 
-    # from app.db.models.device import Device
-    # devices = relationship("Device", back_populates="object")
+    devices: Mapped[List["Device"]] = relationship("Device", back_populates="object")
 
     # owner: User = relationship("User", back_populates="devices")
 

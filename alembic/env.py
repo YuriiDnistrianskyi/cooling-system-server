@@ -6,9 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.db.database import Base
-from app.db.models.device import Device
 
-from app.config import DATABASE_URL
+from app.core.config import DATABASE_URL
 
 SYNC_DATABASE_URL = DATABASE_URL.replace("+asyncpg", "")
 target_metadata = Base.metadata
