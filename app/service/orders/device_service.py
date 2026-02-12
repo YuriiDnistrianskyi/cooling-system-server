@@ -1,4 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from influxdb_client import Point
+from datetime import datetime
+
 from app.service.general_service import GeneralService
 from app.dao import device_dao
 from app.db.database import Device
@@ -35,3 +38,15 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
             obj.object_id = data_for_update["object_id"]
 
         return obj
+
+    async def write_speed(self, device_id: int, payload: dict) -> None:
+        speed: int = payload["value"]
+        point: Point = (
+            Point("speed")
+            .tag("device_id", device_id)
+            .field("value", speed)
+            .time(datetime.utcnow())
+        )
+
+        await self._dao.write_speed(point)
+
