@@ -18,7 +18,7 @@ async def object_get(session: AsyncSession = Depends(get_async_session)):
     objects = await object_service.get(session)
     return {'objects': [object.get_info() for object in objects]}
 
-@object_router.get('/by-id/{object_id}')
+@object_router.get('/{object_id}')
 async def object_get_by_id(
         object_id: int,
         session: AsyncSession = Depends(get_async_session)
@@ -29,7 +29,7 @@ async def object_get_by_id(
     except:
         raise
 
-@object_router.get('/by-user-id/{user_id}')
+@object_router.get('/user/{user_id}')
 async def object_get_by_user_id(
         user_id: int,
         session: AsyncSession = Depends(get_async_session)

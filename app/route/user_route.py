@@ -11,6 +11,17 @@ async def user_get(session: AsyncSession = Depends(get_async_session)):
     users = await user_service.get(session)
     return {'users': [user.get_info() for user in users]}
 
+@user_router.get('/{user_id}')
+async def user_get_by_id(
+        user_id: int,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        user = await user_service.get_by_id(user_id, session)
+        return {'user': user.get_info()}
+    except:
+        raise
+
 @user_router.post('/')
 async def user_post(
         data: CreateUser,
