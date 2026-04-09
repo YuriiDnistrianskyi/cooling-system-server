@@ -9,6 +9,9 @@ from app.core.security import hash_password
 class UserService(GeneralService[User, CreateUser, UpdateUser]):
     _dao = user_dao
 
+    async def get_by_email(self, email, session) -> User:
+        return await self._dao.get_by_email(email, session)
+
     async def create(self, data: CreateUser, session: AsyncSession) -> User:
         hash = hash_password(data.password)
 
