@@ -11,11 +11,8 @@ from app.core.config import INFLUXDB_BUCKET, INFLUXDB_ORG
 class DeviceDao(GeneralDao[Device]):
     _class_type = Device
 
-    async def get_devices_by_object_id(self, object_id: int, session: AsyncSession) -> List[Device]:
-        stmt = (
-            select(Device)
-            .where(Device.object_id == object_id)
-        )
+    async def get_by_object_id(self, object_id: int, session: AsyncSession) -> List[Device]:
+        stmt = select(Device).where(Device.object_id == object_id)
         result = await session.execute(stmt)
         devices = result.scalars().all()
         return devices

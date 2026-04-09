@@ -15,6 +15,28 @@ async def device_get(session: AsyncSession = Depends(get_async_session)):
     devices = await device_service.get(session)
     return {'devices': [device.get_info() for device in devices]}
 
+@device_router.get('/{device_id}')
+async def device_get_by_id(
+        device_id: int,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        device = await device_service.get_by_id(device_id, session)
+        return {'device': device.get_info()}
+    except:
+        raise
+
+@device_router.get('/object/{object_id}')
+async def device_get_by_object_id(
+        object_id: int,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        devices = await device_service.get_by_object_id(object_id, session)
+        return {'devices': [device.get_info() for device in devices]}
+    except:
+        raise
+
 @device_router.post('/')
 async def device_post(
         data: CreateDevice,

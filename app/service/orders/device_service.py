@@ -12,6 +12,10 @@ from app.core.security import hash_password
 class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
     _dao = device_dao
 
+    async def get_by_object_id(self, object_id: int, session: AsyncSession) -> list[Device]:
+        return await self._dao.get_by_object_id(object_id, session)
+
+
     async def create(self, data: CreateDevice, session: AsyncSession) -> Device:
         hash = hash_password(data.password)
 

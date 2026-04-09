@@ -18,8 +18,8 @@ class Device(Base):
     def get_info(self) -> Dict:
         return {
             'id': self.id,
-            'public_name' : self.publicName,
-            'private_name' : self.privateName,
+            'public_name' : self.public_name,
+            'private_name' : self.private_name,
             "object_id" : self.object_id
         }
 
