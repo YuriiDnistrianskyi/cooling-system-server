@@ -33,8 +33,11 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
         obj = await self._dao.update(id, session)
         data_for_update = data.model_dump(exclude_unset=True)
 
-        if "name" in data_for_update:
-            obj.name = data_for_update["name"]
+        if "public_name" in data_for_update:
+            obj.public_name = data_for_update["public_name"]
+
+        if "private_name" in data_for_update:
+            obj.private_name = data_for_update["private_name"]
 
         if "password" in data_for_update:
             obj.password_hash = hash_password(data_for_update["password"])

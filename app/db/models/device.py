@@ -8,7 +8,8 @@ class Device(Base):
     __tablename__ = "device"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True) #TODO id
-    name: Mapped[str] = mapped_column(String)
+    public_name: Mapped[str] = mapped_column(String)
+    private_name: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
     object_id: Mapped[int] = mapped_column(Integer, ForeignKey('object.id'))
 
@@ -17,7 +18,8 @@ class Device(Base):
     def get_info(self) -> Dict:
         return {
             'id': self.id,
-            'name' : self.name,
+            'public_name' : self.publicName,
+            'private_name' : self.privateName,
             "object_id" : self.object_id
         }
 

@@ -7,7 +7,8 @@ class Object(Base):
     __tablename__ = 'object'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String)
+    public_name: Mapped[str] = mapped_column(String)
+    private_name: Mapped[str] = mapped_column(String)
     password_hash: Mapped[str] = mapped_column(String)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     max_temperature: Mapped[float] = mapped_column(Integer)
@@ -20,7 +21,10 @@ class Object(Base):
     def get_info(self) -> Dict:
         return {
             'id': self.id,
-            'name': self.name,
+            'public_name': self.public_name,
+            'private_name': self.private_name,
+            'max_temperature': self.max_temperature,
+            'default_speed_for_devices': self.default_speed_for_devices,
             'user_id': self.user_id
         }
 
