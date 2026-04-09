@@ -15,11 +15,15 @@ from app.ws import ws_manager
 class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
     _dao = object_dao
 
+    async def get_by_user_id(self, user_id: int, session: AsyncSession) -> list[Object]:
+        return await self._dao.get_by_user_id(user_id, session)
+
     async def create(self, data: CreateObject, session: AsyncSession) -> Object:
         hash = hash_password(data.password)
 
         new_obj = Object(
-            name=data.name,
+            public_name=data.public_name,
+            private_name=data.private_name,
             password_hash=hash,
             user_id=data.user_id,
             max_temperature=data.max_temperature,

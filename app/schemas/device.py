@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class CreateDevice(BaseModel):
-    publicName: str
-    privateName: str
+    public_name: str
+    private_name: str
     password: str
     object_id: int
 
 class UpdateDevice(BaseModel):
-    publicName: Optional[str] = None
-    privateName: Optional[str] = None
+    public_name: Optional[str] = None
+    private_name: Optional[str] = None
     password: Optional[str] = None
     object_id: Optional[int] = None

@@ -16,7 +16,8 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
         hash = hash_password(data.password)
 
         new_obj = Device(
-            name=data.name,
+            public_name=data.public_name,
+            private_name=data.private_name,
             password_hash=hash,
             object_id=data.object_id,
         )
