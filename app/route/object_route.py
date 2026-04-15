@@ -40,6 +40,17 @@ async def object_get_by_user_id(
     except:
         raise
 
+@object_router.post('/{private_name}')
+async def object_get_by_private_name(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        object = await object_service.get_by_private_name(private_name, session)
+        return {'object': object.get_info()}
+    except:
+        raise
+
 @object_router.post('/')
 async def object_post(
         data: CreateObject,
@@ -88,6 +99,17 @@ async def object_get_graph(
 ):
     date = await object_service.get_graph(object_id)
     return {'date': date}
+
+@object_router.get('/exists/{private_name}')
+async def object_exists(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        is_object_exists = await object_service.exists(private_name, session)
+        return {'is_object_exists': is_object_exists}
+    except:
+        raise
 
 @object_router.websocket('/ws')
 async def object_websocket(

@@ -90,14 +90,14 @@ async def device_delete(
         await session.rollback()
         raise
 
-@device_router.get('/{private_name}')
+@device_router.get('/exists/{private_name}')
 async def device_exists(
         private_name: str,
         session: AsyncSession = Depends(get_async_session)
 ):
     try:
-        device_exists = await device_service.exists(private_name, session)
-        return {'device_exists': device_exists}
+        is_device_exists = await device_service.exists(private_name, session)
+        return {'is_device_exists': is_device_exists}
     except:
         raise
 
