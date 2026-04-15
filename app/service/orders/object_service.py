@@ -18,6 +18,18 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
     async def get_by_user_id(self, user_id: int, session: AsyncSession) -> list[Object]:
         return await self._dao.get_by_user_id(user_id, session)
 
+    async def get_by_private_name(self, private_name: str, session: AsyncSession) -> Device:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            raise HTTPException(status_code=404, detail='Device private name not found')
+        return obj
+
+    async def exists(self, private_name: str, session: AsyncSession) -> bool:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            return False
+        return True
+
     async def create(self, data: CreateObject, session: AsyncSession) -> Object:
         hash = hash_password(data.password)
 

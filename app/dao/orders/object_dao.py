@@ -17,6 +17,11 @@ class ObjectDao(GeneralDao[Object]):
         result = _list.scalars().all()
         return result
 
+    async def get_by_private_name(self, private_name: int, session: AsyncSession) -> bool:
+        stmt = select(Object).where(Device.private_nam == private_name)
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+        return obj
 
     async def write_temperature(self, point: Point) -> None:
         write_api.write(

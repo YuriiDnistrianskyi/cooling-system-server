@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from influxdb_client import Point
 from datetime import datetime
@@ -15,6 +16,17 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
     async def get_by_object_id(self, object_id: int, session: AsyncSession) -> list[Device]:
         return await self._dao.get_by_object_id(object_id, session)
 
+    async def get_by_private_name(self, private_name: str, session: AsyncSession) -> Device:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            raise HTTPException(status_code=404, detail='Device private name not found')
+        return obj
+
+    async def exists(self, private_name: str, session: AsyncSession) -> bool:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            return False
+        return True
 
     async def create(self, data: CreateDevice, session: AsyncSession) -> Device:
         hash = hash_password(data.password)

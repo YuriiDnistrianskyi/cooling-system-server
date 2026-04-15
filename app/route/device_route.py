@@ -37,6 +37,17 @@ async def device_get_by_object_id(
     except:
         raise
 
+@device_router.get('/{private_name}')
+async def device_get_by_private_name(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        device = await device_service.get_by_private_name(private_name, session)
+        return {'device': device.get_info()}
+    except:
+        raise
+
 @device_router.post('/')
 async def device_post(
         data: CreateDevice,
@@ -77,6 +88,17 @@ async def device_delete(
         return {"message": "Device deleted"}
     except:
         await session.rollback()
+        raise
+
+@device_router.get('/{private_name}')
+async def device_exists(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        device_exists = await device_service.exists(private_name, session)
+        return {'device_exists': device_exists}
+    except:
         raise
 
 @device_router.websocket('/ws')

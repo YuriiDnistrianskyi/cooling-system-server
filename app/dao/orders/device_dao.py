@@ -27,6 +27,12 @@ class DeviceDao(GeneralDao[Device]):
         device = result.scalars().first()
         return device
 
+    async def get_by_private_name(self, private_name: int, session: AsyncSession) -> bool:
+        stmt = select(Device).where(Device.private_nam == private_name)
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+        return obj
+
     async def get_speed(self, device_id: int) -> float:
         query = f"""
                 from(bucket: "{INFLUXDB_BUCKET}")
