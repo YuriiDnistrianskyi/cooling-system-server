@@ -110,7 +110,7 @@ async def object_exists(
 ):
     try:
         is_object_exists = await object_service.exists(private_name, session)
-        return {'is_obj_exists': is_object_exists}
+        return {'exists': is_object_exists}
     except:
         raise
 

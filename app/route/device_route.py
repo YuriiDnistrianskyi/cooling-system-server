@@ -100,7 +100,7 @@ async def device_exists(
 ):
     try:
         is_device_exists = await device_service.exists(private_name, session)
-        return {'is_obj_exists': is_device_exists}
+        return {'exists': is_device_exists}
     except:
         raise
 

@@ -7,7 +7,7 @@ from app.service import user_service
 from app.schemas.user import CreateUser, UpdateUser
 
 user_router = APIRouter(
-    dependencies=[Depends(get_current_user)]
+    # dependencies=[Depends(get_current_user)]
 )
 
 @user_router.get('/')

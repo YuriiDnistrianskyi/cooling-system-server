@@ -35,7 +35,7 @@ async def login(
             raise HTTPException(status_code=400, detail="Incorrect email or password")
         access_token = create_access_token(user.id)
         refresh_token = create_refresh_token(user.id)
-        return {'access_token': access_token, 'refresh_token': refresh_token}
+        return {'access_token': access_token, 'refresh_token': refresh_token, 'user_id': user.id}
     except:
         raise
 
