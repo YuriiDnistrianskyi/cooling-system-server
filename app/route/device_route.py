@@ -3,12 +3,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import json
 
 from app.db.dependencies import get_async_session, get_session_factory
+from app.core.get_current_user import get_current_user
 from app.service import device_service
 from app.schemas.device import CreateDevice, UpdateDevice
 from app.ws import ws_manager
 from app.core.security import verify_password
 
-device_router = APIRouter()
+device_router = APIRouter(
+    dependencies=[Depends(get_current_user)]
+)
 
 @device_router.get('/')
 async def device_get(session: AsyncSession = Depends(get_async_session)):

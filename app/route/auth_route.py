@@ -17,9 +17,9 @@ async def register(
 ):
     try:
         user = await user_service.create(data, session)
-        await session.coommit()
-        await session.refresh()
-        return {'user': user.dict()}
+        await session.commit()
+        await session.refresh(user)
+        return {'user': user.get_info()}
     except:
         await session.rollback()
         raise

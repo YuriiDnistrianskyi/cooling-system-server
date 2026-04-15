@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.dependencies import get_async_session
+from app.core.get_current_user import get_current_user
 from app.service import user_service
 from app.schemas.user import CreateUser, UpdateUser
 
-user_router = APIRouter()
+user_router = APIRouter(
+    dependencies=[Depends(get_current_user)]
+)
 
 @user_router.get('/')
 async def user_get(session: AsyncSession = Depends(get_async_session)):

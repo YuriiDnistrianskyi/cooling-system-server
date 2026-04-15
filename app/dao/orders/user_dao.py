@@ -11,7 +11,7 @@ class UserDao(GeneralDao[User]):
     async def get_by_email(self, email: str, session: AsyncSession) -> User:
         stmt = select(User).where(User.email == email)
         result = await session.execute(stmt)
-        user = result.scalar_one_or_none()
+        user = result.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return user

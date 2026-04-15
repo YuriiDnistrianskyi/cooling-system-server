@@ -11,4 +11,4 @@ INFLUXDB_BUCKET = getenv("INFLUXDB_BUCKET")
 
 SECRET_KEY = getenv("SECRET_KEY")
 
-COOLDOWN = int(getenv("COOLDOWN"))
+COOLDOWN = int(getenv("COOLDOWN", 10000))

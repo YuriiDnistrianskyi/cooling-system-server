@@ -5,13 +5,16 @@ import json
 from datetime import datetime
 
 from app.db.dependencies import get_async_session, get_session_factory
+from app.core.get_current_user import get_current_user
 from app.db.influxdb import write_api
 from app.service import object_service
 from app.schemas.object import CreateObject, UpdateObject
 from app.core.security import verify_password
 from app.ws import ws_manager
 
-object_router = APIRouter()
+object_router = APIRouter(
+    dependencies=[Depends(get_current_user)]
+)
 
 @object_router.get('/')
 async def object_get(session: AsyncSession = Depends(get_async_session)):
