@@ -9,7 +9,7 @@ user_router = APIRouter()
 @user_router.get('/')
 async def user_get(session: AsyncSession = Depends(get_async_session)):
     users = await user_service.get(session)
-    return {'users': [user.get_info() for user in users]}
+    return {'list': [user.get_info() for user in users]}
 
 @user_router.get('/{user_id}')
 async def user_get_by_id(
@@ -18,7 +18,7 @@ async def user_get_by_id(
 ):
     try:
         user = await user_service.get_by_id(user_id, session)
-        return {'user': user.get_info()}
+        return {'obj': user.get_info()}
     except:
         raise
 
@@ -31,7 +31,7 @@ async def user_post(
         new_user = await user_service.create(data, session)
         await session.commit()
         await session.refresh(new_user)
-        return {"user": new_user.get_info()}
+        return {"obj": new_user.get_info()}
     except:
         await session.rollback()
         raise
@@ -46,7 +46,7 @@ async def user_patch(
         new_user = await user_service.update(user_id, data, session)
         await session.commit()
         await session.refresh(new_user)
-        return {"user": new_user.get_info()}
+        return {"obj": new_user.get_info()}
     except:
         await session.rollback()
         raise

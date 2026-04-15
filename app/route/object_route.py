@@ -25,7 +25,7 @@ async def object_get_by_id(
 ):
     try:
         object = await object_service.get_by_id(object_id, session)
-        return {'object': object.get_info()}
+        return {'list': object.get_info()}
     except:
         raise
 
@@ -36,7 +36,7 @@ async def object_get_by_user_id(
 ):
     try:
         objects = await object_service.get_by_user_id(user_id, session)
-        return {'objects': [object.get_info() for object in objects]}
+        return {'list': [object.get_info() for object in objects]}
     except:
         raise
 
@@ -47,7 +47,7 @@ async def object_get_by_private_name(
 ):
     try:
         object = await object_service.get_by_private_name(private_name, session)
-        return {'object': object.get_info()}
+        return {'obj': object.get_info()}
     except:
         raise
 
@@ -60,7 +60,7 @@ async def object_post(
         new_object = await object_service.create(data, session)
         await session.commit()
         await session.refresh(new_object)
-        return {"object": new_object.get_info()}
+        return {"obj": new_object.get_info()}
     except:
         await session.rollback()
         raise
@@ -75,7 +75,7 @@ async def object_patch(
         new_object = await object_service.update(object_id, data, session)
         await session.commit()
         await session.refresh(new_object)
-        return {"object": new_object.get_info()}
+        return {"obj": new_object.get_info()}
     except:
         await session.rollback()
         raise
@@ -97,8 +97,8 @@ async def object_delete(
 async def object_get_graph(
         object_id: int,
 ):
-    date = await object_service.get_graph(object_id)
-    return {'date': date}
+    data = await object_service.get_graph(object_id)
+    return {'data': data}
 
 @object_router.get('/exists/{private_name}')
 async def object_exists(
@@ -107,7 +107,7 @@ async def object_exists(
 ):
     try:
         is_object_exists = await object_service.exists(private_name, session)
-        return {'is_object_exists': is_object_exists}
+        return {'is_obj_exists': is_object_exists}
     except:
         raise
 

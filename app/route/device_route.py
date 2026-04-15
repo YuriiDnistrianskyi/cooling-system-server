@@ -13,7 +13,7 @@ device_router = APIRouter()
 @device_router.get('/')
 async def device_get(session: AsyncSession = Depends(get_async_session)):
     devices = await device_service.get(session)
-    return {'devices': [device.get_info() for device in devices]}
+    return {'list': [device.get_info() for device in devices]}
 
 @device_router.get('/{device_id}')
 async def device_get_by_id(
@@ -22,7 +22,7 @@ async def device_get_by_id(
 ):
     try:
         device = await device_service.get_by_id(device_id, session)
-        return {'device': device.get_info()}
+        return {'obj': device.get_info()}
     except:
         raise
 
@@ -33,7 +33,7 @@ async def device_get_by_object_id(
 ):
     try:
         devices = await device_service.get_by_object_id(object_id, session)
-        return {'devices': [device.get_info() for device in devices]}
+        return {'list': [device.get_info() for device in devices]}
     except:
         raise
 
@@ -44,7 +44,7 @@ async def object_get_by_private_name(
 ):
     try:
         device = await device_service.get_by_private_name(private_name, session)
-        return {'device': device.get_info()}
+        return {'obj': device.get_info()}
     except:
         raise
 
@@ -57,7 +57,7 @@ async def device_post(
         new_device = await device_service.create(data, session)
         await session.commit()
         await session.refresh(new_device)
-        return {"device": new_device.get_info()}
+        return {"obj": new_device.get_info()}
     except:
         await session.rollback()
         raise
@@ -72,7 +72,7 @@ async def device_patch(
         new_device = await device_service.update(device_id, data, session)
         await session.commit()
         await session.refresh(new_device)
-        return {"device": new_device.get_info()}
+        return {"obj": new_device.get_info()}
     except:
         await session.rollback()
         raise
@@ -97,7 +97,7 @@ async def device_exists(
 ):
     try:
         is_device_exists = await device_service.exists(private_name, session)
-        return {'is_device_exists': is_device_exists}
+        return {'is_obj_exists': is_device_exists}
     except:
         raise
 
