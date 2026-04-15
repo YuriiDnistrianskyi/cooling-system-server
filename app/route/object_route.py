@@ -40,7 +40,7 @@ async def object_get_by_user_id(
     except:
         raise
 
-@object_router.post('/{private_name}')
+@object_router.get('/by-private-name/{private_name}')
 async def object_get_by_private_name(
         private_name: str,
         session: AsyncSession = Depends(get_async_session)

@@ -27,8 +27,8 @@ class DeviceDao(GeneralDao[Device]):
         device = result.scalars().first()
         return device
 
-    async def get_by_private_name(self, private_name: int, session: AsyncSession) -> bool:
-        stmt = select(Device).where(Device.private_nam == private_name)
+    async def get_by_private_name(self, private_name: str, session: AsyncSession) -> bool:
+        stmt = select(Device).where(Device.private_name == private_name)
         result = await session.execute(stmt)
         obj = result.scalars().first()
         return obj

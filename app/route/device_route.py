@@ -37,8 +37,8 @@ async def device_get_by_object_id(
     except:
         raise
 
-@device_router.get('/{private_name}')
-async def device_get_by_private_name(
+@device_router.get('by-private-name/{private_name}')
+async def object_get_by_private_name(
         private_name: str,
         session: AsyncSession = Depends(get_async_session)
 ):
