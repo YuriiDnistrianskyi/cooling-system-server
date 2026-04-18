@@ -5,7 +5,7 @@ from app.core.jwt import create_access_token, create_refresh_token, verify_token
 from app.core.security import verify_password
 from app.db.dependencies import get_async_session
 from app.service import user_service
-from app.schemas.auth import Login
+from app.schemas.auth import Login, Refresh
 from app.schemas.user import CreateUser
 
 auth_router = APIRouter()
@@ -41,12 +41,13 @@ async def login(
 
 @auth_router.post('/refresh')
 async def refresh(
-        refresh_token: str
+        data: Refresh,
 ):
     try:
-        payload = verify_token(refresh_token)
+        payload = verify_token(data.refresh_token)
         user_id = payload['user_id']
         access_token = create_access_token(user_id)
-        return {'access_token': access_token}
+        refresh_token = create_refresh_token(user_id)
+        return {'access_token': access_token, 'refresh_token': refresh_token}
     except:
         raise

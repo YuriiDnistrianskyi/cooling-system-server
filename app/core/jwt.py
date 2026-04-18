@@ -9,7 +9,7 @@ def create_access_token(user_id: int):
     encode = {
         'user_id': user_id
     }
-    expire = datetime.now(timezone.utc) + timedelta(minutes=10)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
     encode.update({'exp': expire})
     return jwt.encode(encode, SECRET_KEY, algorithm='HS256')
 

@@ -18,9 +18,9 @@ class Device(Base):
     def get_info(self) -> Dict:
         return {
             'id': self.id,
-            'public_name' : self.public_name,
-            'private_name' : self.private_name,
-            "object_id" : self.object_id
+            'publicName' : self.public_name,
+            'privateName' : self.private_name,
+            "objectId" : self.object_id
         }
 
     @staticmethod
