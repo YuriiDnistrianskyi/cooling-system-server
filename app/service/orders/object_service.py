@@ -18,16 +18,28 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
     async def get_by_user_id(self, user_id: int, session: AsyncSession) -> list[Object]:
         return await self._dao.get_by_user_id(user_id, session)
 
+    async def get_by_private_name(self, private_name: str, session: AsyncSession) -> Object:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            raise HTTPException(status_code=404, detail='Object private name not found')
+        return obj
+
+    async def exists(self, private_name: str, session: AsyncSession) -> bool:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            return False
+        return True
+
     async def create(self, data: CreateObject, session: AsyncSession) -> Object:
         hash = hash_password(data.password)
 
         new_obj = Object(
-            public_name=data.public_name,
-            private_name=data.private_name,
+            public_name=data.publicName,
+            private_name=data.privateName,
             password_hash=hash,
-            user_id=data.user_id,
-            max_temperature=data.max_temperature,
-            default_speed_for_devices=data.default_speed_for_devices,
+            user_id=data.userId,
+            max_temperature=data.maxTemperature,
+            default_speed_for_devices=data.defaultSpeedForDevices,
         )
 
         result = await self._dao.create(new_obj, session)
@@ -37,23 +49,23 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
         obj = await self._dao.update(id, session)
         data_for_update = data.model_dump(exclude_unset=True)
 
-        if "public_name" in data_for_update:
-            obj.public_name = data_for_update["public_name"]
+        if "publicName" in data_for_update:
+            obj.public_name = data_for_update["publicName"]
 
-        if "private_name" in data_for_update:
-            obj.private_name = data_for_update["private_name"]
+        if "privateName" in data_for_update:
+            obj.private_name = data_for_update["privateName"]
 
         if "password" in data_for_update:
             obj.password_hash = hash_password(data_for_update["password"])
 
-        if "user_id" in data_for_update:
-            obj.user_id = data_for_update["user_id"]
+        if "userId" in data_for_update:
+            obj.user_id = data_for_update["userId"]
 
-        if "max_temperature" in data_for_update:
-            obj.max_temperature = data_for_update["max_temperature"]
+        if "maxTemperature" in data_for_update:
+            obj.max_temperature = data_for_update["maxTemperature"]
 
-        if "default_speed_for_devices" in data_for_update:
-            obj.default_speed_for_devices = data_for_update["default_speed_for_devices"]
+        if "defaultSpeedForDevices" in data_for_update:
+            obj.default_speed_for_devices = data_for_update["defaultSpeedForDevices"]
 
         return obj
 

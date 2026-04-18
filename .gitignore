@@ -2,4 +2,4 @@
 ./app/.env
 
 .venv
-app/.env
+.env

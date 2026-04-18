@@ -9,12 +9,15 @@ from app.core.security import hash_password
 class UserService(GeneralService[User, CreateUser, UpdateUser]):
     _dao = user_dao
 
+    async def get_by_email(self, email, session) -> User:
+        return await self._dao.get_by_email(email, session)
+
     async def create(self, data: CreateUser, session: AsyncSession) -> User:
         hash = hash_password(data.password)
 
         new_obj = User(
-            first_name=data.first_name,
-            last_name=data.last_name,
+            first_name=data.firstName,
+            last_name=data.lastName,
             email=data.email,
             password_hash=hash
         )
@@ -26,11 +29,11 @@ class UserService(GeneralService[User, CreateUser, UpdateUser]):
         obj = await self._dao.update(id, session)
         data_for_update = data.model_dump(exclude_unset=True)
 
-        if "first_name" in data_for_update:
-            obj.first_name = data_for_update["first_name"]
+        if "firstName" in data_for_update:
+            obj.first_name = data_for_update["firstName"]
 
-        if "last_name" in data_for_update:
-            obj.last_name = data_for_update["last_name"]
+        if "lastName" in data_for_update:
+            obj.last_name = data_for_update["lastName"]
 
         if "email" in data_for_update:
             obj.email = data_for_update["email"]

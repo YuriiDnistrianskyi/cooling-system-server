@@ -21,11 +21,11 @@ class Object(Base):
     def get_info(self) -> Dict:
         return {
             'id': self.id,
-            'public_name': self.public_name,
-            'private_name': self.private_name,
-            'max_temperature': self.max_temperature,
-            'default_speed_for_devices': self.default_speed_for_devices,
-            'user_id': self.user_id
+            'publicName': self.public_name,
+            'privateName': self.private_name,
+            'maxTemperature': self.max_temperature,
+            'defaultSpeedForDevices': self.default_speed_for_devices,
+            'userId': self.user_id
         }
 
     @staticmethod

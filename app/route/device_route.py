@@ -3,17 +3,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import json
 
 from app.db.dependencies import get_async_session, get_session_factory
+from app.core.get_current_user import get_current_user
 from app.service import device_service
 from app.schemas.device import CreateDevice, UpdateDevice
 from app.ws import ws_manager
 from app.core.security import verify_password
 
-device_router = APIRouter()
+device_router = APIRouter(
+    dependencies=[Depends(get_current_user)]
+)
 
 @device_router.get('/')
 async def device_get(session: AsyncSession = Depends(get_async_session)):
     devices = await device_service.get(session)
-    return {'devices': [device.get_info() for device in devices]}
+    return {'list': [device.get_info() for device in devices]}
 
 @device_router.get('/{device_id}')
 async def device_get_by_id(
@@ -22,7 +25,7 @@ async def device_get_by_id(
 ):
     try:
         device = await device_service.get_by_id(device_id, session)
-        return {'device': device.get_info()}
+        return {'obj': device.get_info()}
     except:
         raise
 
@@ -33,7 +36,18 @@ async def device_get_by_object_id(
 ):
     try:
         devices = await device_service.get_by_object_id(object_id, session)
-        return {'devices': [device.get_info() for device in devices]}
+        return {'list': [device.get_info() for device in devices]}
+    except:
+        raise
+
+@device_router.get('by-private-name/{private_name}')
+async def object_get_by_private_name(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        device = await device_service.get_by_private_name(private_name, session)
+        return {'obj': device.get_info()}
     except:
         raise
 
@@ -46,7 +60,7 @@ async def device_post(
         new_device = await device_service.create(data, session)
         await session.commit()
         await session.refresh(new_device)
-        return {"device": new_device.get_info()}
+        return {"obj": new_device.get_info()}
     except:
         await session.rollback()
         raise
@@ -61,7 +75,7 @@ async def device_patch(
         new_device = await device_service.update(device_id, data, session)
         await session.commit()
         await session.refresh(new_device)
-        return {"device": new_device.get_info()}
+        return {"obj": new_device.get_info()}
     except:
         await session.rollback()
         raise
@@ -77,6 +91,17 @@ async def device_delete(
         return {"message": "Device deleted"}
     except:
         await session.rollback()
+        raise
+
+@device_router.get('/exists/{private_name}')
+async def device_exists(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        is_device_exists = await device_service.exists(private_name, session)
+        return {'exists': is_device_exists}
+    except:
         raise
 
 @device_router.websocket('/ws')

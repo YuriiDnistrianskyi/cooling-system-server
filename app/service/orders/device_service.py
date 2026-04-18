@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from influxdb_client import Point
 from datetime import datetime
@@ -15,15 +16,26 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
     async def get_by_object_id(self, object_id: int, session: AsyncSession) -> list[Device]:
         return await self._dao.get_by_object_id(object_id, session)
 
+    async def get_by_private_name(self, private_name: str, session: AsyncSession) -> Device:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            raise HTTPException(status_code=404, detail='Device private name not found')
+        return obj
+
+    async def exists(self, private_name: str, session: AsyncSession) -> bool:
+        obj = await self._dao.get_by_private_name(private_name, session)
+        if obj is None:
+            return False
+        return True
 
     async def create(self, data: CreateDevice, session: AsyncSession) -> Device:
         hash = hash_password(data.password)
 
         new_obj = Device(
-            public_name=data.public_name,
-            private_name=data.private_name,
+            public_name=data.publicName,
+            private_name=data.privateName,
             password_hash=hash,
-            object_id=data.object_id,
+            object_id=data.objectId,
         )
 
         result = await self._dao.create(new_obj, session)
@@ -33,17 +45,17 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
         obj = await self._dao.update(id, session)
         data_for_update = data.model_dump(exclude_unset=True)
 
-        if "public_name" in data_for_update:
-            obj.public_name = data_for_update["public_name"]
+        if "publicName" in data_for_update:
+            obj.public_name = data_for_update["publicName"]
 
-        if "private_name" in data_for_update:
-            obj.private_name = data_for_update["private_name"]
+        if "privateName" in data_for_update:
+            obj.private_name = data_for_update["privateName"]
 
         if "password" in data_for_update:
             obj.password_hash = hash_password(data_for_update["password"])
 
-        if "object_id" in data_for_update:
-            obj.object_id = data_for_update["object_id"]
+        if "objectId" in data_for_update:
+            obj.object_id = data_for_update["objectId"]
 
         return obj
 

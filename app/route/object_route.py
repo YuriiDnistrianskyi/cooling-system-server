@@ -5,13 +5,16 @@ import json
 from datetime import datetime
 
 from app.db.dependencies import get_async_session, get_session_factory
+from app.core.get_current_user import get_current_user
 from app.db.influxdb import write_api
 from app.service import object_service
 from app.schemas.object import CreateObject, UpdateObject
 from app.core.security import verify_password
 from app.ws import ws_manager
 
-object_router = APIRouter()
+object_router = APIRouter(
+    dependencies=[Depends(get_current_user)]
+)
 
 @object_router.get('/')
 async def object_get(session: AsyncSession = Depends(get_async_session)):
@@ -25,7 +28,7 @@ async def object_get_by_id(
 ):
     try:
         object = await object_service.get_by_id(object_id, session)
-        return {'object': object.get_info()}
+        return {'list': object.get_info()}
     except:
         raise
 
@@ -36,7 +39,18 @@ async def object_get_by_user_id(
 ):
     try:
         objects = await object_service.get_by_user_id(user_id, session)
-        return {'objects': [object.get_info() for object in objects]}
+        return {'list': [object.get_info() for object in objects]}
+    except:
+        raise
+
+@object_router.get('/by-private-name/{private_name}')
+async def object_get_by_private_name(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        object = await object_service.get_by_private_name(private_name, session)
+        return {'obj': object.get_info()}
     except:
         raise
 
@@ -49,7 +63,7 @@ async def object_post(
         new_object = await object_service.create(data, session)
         await session.commit()
         await session.refresh(new_object)
-        return {"object": new_object.get_info()}
+        return {"obj": new_object.get_info()}
     except:
         await session.rollback()
         raise
@@ -64,7 +78,7 @@ async def object_patch(
         new_object = await object_service.update(object_id, data, session)
         await session.commit()
         await session.refresh(new_object)
-        return {"object": new_object.get_info()}
+        return {"obj": new_object.get_info()}
     except:
         await session.rollback()
         raise
@@ -86,8 +100,19 @@ async def object_delete(
 async def object_get_graph(
         object_id: int,
 ):
-    date = await object_service.get_graph(object_id)
-    return {'date': date}
+    data = await object_service.get_graph(object_id)
+    return {'data': data}
+
+@object_router.get('/exists/{private_name}')
+async def object_exists(
+        private_name: str,
+        session: AsyncSession = Depends(get_async_session)
+):
+    try:
+        is_object_exists = await object_service.exists(private_name, session)
+        return {'exists': is_object_exists}
+    except:
+        raise
 
 @object_router.websocket('/ws')
 async def object_websocket(
