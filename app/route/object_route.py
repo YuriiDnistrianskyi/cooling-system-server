@@ -12,9 +12,7 @@ from app.schemas.object import CreateObject, UpdateObject
 from app.core.security import verify_password
 from app.ws import ws_manager
 
-object_router = APIRouter(
-    dependencies=[Depends(get_current_user)]
-)
+object_router = APIRouter()
 
 @object_router.get('/')
 async def object_get(session: AsyncSession = Depends(get_async_session)):
@@ -119,16 +117,16 @@ async def object_websocket(
         websocket: WebSocket,
         session_factory = Depends(get_session_factory)
 ):
-    object_id = int(websocket.query_params.get('object_id'))
+    object_private_name = websocket.query_params.get('object_name')
     password = websocket.query_params.get('password')
 
     async with session_factory() as session:
-        object = await object_service.get_by_id(object_id, session)
+        object = await object_service.get_by_private_name(object_private_name, session)
         password_is_ok = verify_password(password, object.password_hash)
         if not password_is_ok:
             raise HTTPException(status_code=400, detail="Incorrect password")
 
-    await ws_manager.connect("object", object_id, websocket)
+    await ws_manager.connect("object", object.id, websocket)
 
     try:
         while True:
@@ -136,7 +134,6 @@ async def object_websocket(
             payload = json.loads(data)
 
             async with session_factory() as session:
-                await object_service.write_temperature(object_id, payload, session)
-
-    except:
-        await ws_manager.disconnect("object", object_id, websocket)
+                await object_service.write_temperature(object.id, payload, session)
+    except Exception as ex:
+        await ws_manager.disconnect("object", object.id, websocket)

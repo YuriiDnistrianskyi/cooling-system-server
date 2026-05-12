@@ -17,7 +17,7 @@ class DeviceDao(GeneralDao[Device]):
         devices = result.scalars().all()
         return devices
 
-    async def get_first_device_by_object_id(self, object_id: int, session: AsyncSession) -> List[Device]:
+    async def get_first_device_by_object_id(self, object_id: int, session: AsyncSession) -> Device:
         stmt = (
             select(Device)
             .where(Device.object_id == object_id)
