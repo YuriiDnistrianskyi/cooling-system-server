@@ -39,6 +39,7 @@ class DeviceDao(GeneralDao[Device]):
                 |> range(start: -30d)
                 |> filter(fn: (r) => 
                    r._measurement == "speed" and
+                   r._field == "value" and
                    r.device_id == "{device_id}"
                 )
                 |> last()

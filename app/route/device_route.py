@@ -10,7 +10,7 @@ from app.ws import ws_manager
 from app.core.security import verify_password
 
 device_router = APIRouter(
-    dependencies=[Depends(get_current_user)]
+    # dependencies=[Depends(get_current_user)]
 )
 
 @device_router.get('/')
@@ -109,22 +109,23 @@ async def device_websocket(
         websocket: WebSocket,
         session_factory = Depends(get_session_factory)
 ):
-    device_id = int(websocket.query_params.get('device_id'))
+    device_name = websocket.query_params.get('device_name')
     password = websocket.query_params.get('password')
 
     async with session_factory() as session:
-        device = await device_service.get_by_id(device_id, session)
+        device = await device_service.get_by_private_name(device_name, session)
         password_is_ok = verify_password(password, device.password_hash)
         if not password_is_ok:
             raise HTTPException(status_code=400, detail="Incorrect password")
 
-    await ws_manager.connect("device", device_id, websocket)
+    await ws_manager.connect("device", device.id, websocket)
 
     try:
         while True:
             data = await websocket.receive_text()
             payload = json.loads(data)
-            await device_service.write_speed(device_id, payload)
 
-    except:
-        await ws_manager.disconnect("device", device_id, websocket)
+            await device_service.write_speed(device.id, payload)
+
+    except Exception as ex:
+        await ws_manager.disconnect("device", device.id, websocket)
