@@ -86,14 +86,15 @@ class ObjectService(GeneralService[Object, CreateObject, UpdateObject]):
         can_send: bool = await can_send_command(object_id)
         first_device: int = await device_dao.get_first_device_by_object_id(object_id, session)
         device_speed: float = await device_dao.get_speed(first_device.id)
-        object: Object = await object_dao.get_by_id(object_id, session)
+        object: Object = await object_dao.get_by_id(object_id, session) #
+        devices: List[Device] = await device_dao.get_by_object_id(object.id, session)
 
         if temperature > object.max_temperature and can_send:
             payload: dict = {"command": "up"}
-            for device in object.devices:
+            for device in devices:
                 await ws_manager.send_to("device", device.id, payload)
 
         elif (temperature < object.max_temperature) and (device_speed > object.default_speed_for_devices) and can_send:
             payload: dict = {"command": "down"}
-            for device in object.devices:
+            for device in devices:
                 await ws_manager.send_to("device", device.id, payload)
