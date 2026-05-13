@@ -1,5 +1,7 @@
 ./.venv
 ./app/.env
 
+.pyc
+
 .venv
 .env
