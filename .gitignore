@@ -2,6 +2,7 @@
 ./app/.env
 
 .pyc
+.cpython-311.pyc
 
 .venv
 .env
