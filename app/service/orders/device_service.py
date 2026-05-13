@@ -4,10 +4,11 @@ from influxdb_client import Point
 from datetime import datetime
 
 from app.service.general_service import GeneralService
-from app.dao import device_dao
+from app.dao import device_dao, object_dao
 from app.db.database import Device
 from app.schemas.device import CreateDevice, UpdateDevice
 from app.core.security import hash_password
+from app.ws import ws_manager
 
 
 class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
@@ -59,8 +60,8 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
 
         return obj
 
-    async def write_speed(self, device_id: int, payload: dict) -> None:
-        speed: int = payload["value"]
+    async def write_speed(self, device_id: int, payload: dict, session: AsyncSession) -> None:
+        speed: int = round(payload["value"])
         point: Point = (
             Point("speed")
             .tag("device_id", device_id)
@@ -70,3 +71,8 @@ class DeviceService(GeneralService[Device, CreateDevice, UpdateDevice]):
 
         await self._dao.write_speed(point)
 
+        device = await self._dao.get_device(device_id, session)
+        default_speed: int = await object_dao.get_by_id(device.object_id, session).default_speed
+
+        if speed < default_speed:
+            await ws_manager.send_to("device", device_id, {"command": "up"})
