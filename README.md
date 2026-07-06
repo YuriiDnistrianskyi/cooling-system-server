@@ -59,7 +59,7 @@ The backend communicates with:
 
 ```bash
 git clone https://github.com/YuriiDnistrianskyi/cooling-system-server
-cd backend
+cd app
 
 python -m venv .venv
 
